@@ -217,6 +217,58 @@ void Project1(){
     }
   }
 
+  // Moving joint4, that is Servo 6
+  currentjointpos4 =  ax12GetRegister(servo6, 36, 2);
+  Serial.println("Current Joint4 Position:");
+  Serial.println(currentjointpos4);
+  Serial.println("End Joint4 Position:");
+  Serial.println(jointpos4);
+  delay(1000);
+  if (currentjointpos4 > jointpos4)
+  {
+    while(currentjointpos4 >= jointpos4) 
+    {
+      SetPosition(servo6, currentjointpos4);
+      currentjointpos4 = currentjointpos4--;
+      delay(20);
+    }
+  }
+  else
+  {
+    while(currentjointpos4 <= jointpos4) 
+    {
+      SetPosition(servo6, currentjointpos4);
+      currentjointpos4 = currentjointpos4++;
+      delay(20);
+    }
+  }
+
+  // Moving joint5, that is Servo 7
+  currentjointpos5 =  ax12GetRegister(servo7, 36, 2);
+  Serial.println("Current Joint5 Position:");
+  Serial.println(currentjointpos5);
+  Serial.println("End Joint5 Position:");
+  Serial.println(jointpos5);
+  delay(1000);
+  if (currentjointpos5 > jointpos5)
+  {
+    while(currentjointpos5 >= jointpos5) 
+    {
+      SetPosition(servo7, currentjointpos5);
+      currentjointpos5 = currentjointpos5--;
+      delay(20);
+    }
+  }
+  else
+  {
+    while(currentjointpos5 <= jointpos5) 
+    {
+      SetPosition(servo7, currentjointpos5);
+      currentjointpos5 = currentjointpos5++;
+      delay(20);
+    }
+  }
+
   // End project code
   //********************************************
 
