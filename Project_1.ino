@@ -1,8 +1,6 @@
 
 
 //EE485/CES592 PROJECT
-//DO NOTE CHANGE ANYTHING HERE
-//GO TO LINE 75
 
 #include <ax12.h>
 #include <BioloidController.h>
@@ -110,7 +108,6 @@ void loop(){
 
 //****************************************
 //Project 1 Code
-//Do not change anything above this line
 
 void Project1(){
   Serial.println("###########################");
@@ -220,10 +217,7 @@ void Project1(){
     }
   }
 
-
-
-  //End your code here
-  //Do not change anything below this line
+  // End project code
   //********************************************
 
 
