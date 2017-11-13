@@ -140,10 +140,16 @@ void Project1(){
 
   //Given x, y, z find the angles for joint 1 - 5 (theta1 - theta5)
   int e = sqrt((pow((R - C), 2) + pow(S, 2)));
-  theta1 = (atan(x / y));
-  theta2 = (asin((S - B) / A));
-  theta3 = (atan(e / B));
-  theta4 = (atan(C / B));
+  // theta1 = (atan(y / x));
+  // theta2 = (asin((S - B) / A));
+  // theta3 = (atan(e / B));
+  // theta4 = (atan(C / B));
+  // theta5 = 0;
+  int D = (pow(x, 2) + pow(y, 2) + pow((z - A), 2) - pow(B, 2) - pow(C, 2) / (2 * B * C));
+  theta1 = (atan2(y, x) * 180 / PI);
+  theta2 = (atan2((z - A), sqrt(pow(x, 2) + pow(y, 2))));
+  theta3 = (atan2(sqrt(1 - pow(D, 2)), D));
+  theta4 = (theta2 * -1 + theta3);
   theta5 = 0;
 
   //Convert theta1-theta5 to jointpos1-jointpos5
