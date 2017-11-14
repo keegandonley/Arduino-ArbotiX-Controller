@@ -162,11 +162,11 @@ void Project1(){
 
 
   //Convert theta1-theta5 to jointpos1-jointpos5
-  jointpos1 = theta1 * 1024 / 360;
+  jointpos1 = theta1 * 1024 / 60;
   jointpos2 = theta2 * 1024 / 60;
   jointpos3 = theta3 * 1024 / 60;
   jointpos4 = theta4 * 1024 / 60;
-  jointpos5 = theta5 * 1024 / 360;
+  jointpos5 = theta5 * 1024 / 60;
 
   //move Servo 1 - Servo 7  
   //jointpos1 -> Servo ID: 1
