@@ -148,9 +148,9 @@ void Project1(){
   // theta4 = (atan(C / B));
   // theta5 = 0;
   int D = ((pow(x, 2) + pow(y, 2) + pow((z - A), 2) - pow(B, 2) - pow(C, 2)) / (2 * B * C));
-  theta1 = atan(y/x) * 180 / PI;
-  theta2 = (atan((z - A)/ sqrt(pow(x, 2) + pow(y, 2)))) * 180 / PI;
-  theta3 = (atan(sqrt(1 - pow(D, 2))/ D)) * 180 / PI;
+  theta1 = atan2(x/y) * 180 / PI;
+  theta2 = (atan2((z - A), sqrt(pow(x, 2) + pow(y, 2)))) * 180 / PI;
+  theta3 = (atan2(sqrt(1 - pow(D, 2)), D)) * 180 / PI;
   theta4 = (theta2 * -1 + theta3);
   theta5 = 0;
   
