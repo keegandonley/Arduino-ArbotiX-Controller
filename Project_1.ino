@@ -18,11 +18,11 @@ int pos2;
 int x;
 int y;
 int z;
-int theta1;
-int theta2;
-int theta3;
-int theta4;
-int theta5;
+float theta1;
+float theta2;
+float theta3;
+float theta4;
+float theta5;
 int jointpos1;
 int jointpos2;
 int jointpos3;
@@ -126,9 +126,11 @@ void Project1(){
   const int S = z;
   const int R = x;
   
-  const int A = 15;
-  const int B = 15.5;
-  const int C = 12;
+  const int A = 11;
+  const int B = 15;
+  const int C = 15.5;
+  const int D = 7;
+  const int E = 6;
 
 
   Serial.println("Moving to (X, Y, Z)");
@@ -142,17 +144,18 @@ void Project1(){
 
   //Given x, y, z find the angles for joint 1 - 5 (theta1 - theta5)
   int e = sqrt((pow((R - C), 2) + pow(S, 2)));
-  // theta1 = (atan(y / x));
-  // theta2 = (asin((S - B) / A));
-  // theta3 = (atan(e / B));
-  // theta4 = (atan(C / B));
-  // theta5 = 0;
   int D = ((pow(x, 2) + pow(y, 2) + pow((z - A), 2) - pow(B, 2) - pow(C, 2)) / (2 * B * C));
-  theta1 = atan2(x/y) * 180 / PI;
-  theta2 = (atan2((z - A), sqrt(pow(x, 2) + pow(y, 2)))) * 180 / PI;
-  theta3 = (atan2(sqrt(1 - pow(D, 2)), D)) * 180 / PI;
-  theta4 = (theta2 * -1 + theta3);
+  theta1 = atan2(y/x);
+  theta2 = (atan2((z - A), sqrt(pow(x, 2) + pow(y, 2))));
+  theta3 = (atan2(-sqrt(1 - pow(D, 2)), D));
+  theta4 = (theta2 * -1 - theta3);
   theta5 = 0;
+
+  theta1 = theta1 * 180 / PI;
+  theta2 = theta2 * 180 / PI;
+  theta3 = theta3 * 180 / PI;
+  theta4 = theta4 * 180 / PI;
+  theta5 = theta5 * 180 / PI;
   
   Serial.println(theta1);
   Serial.println(theta2);
