@@ -23,11 +23,11 @@ float theta2;
 float theta3;
 float theta4;
 float theta5;
-int jointpos1;
-int jointpos2;
-int jointpos3;
-int jointpos4;
-int jointpos5;
+long jointpos1;
+long jointpos2;
+long jointpos3;
+long jointpos4;
+long jointpos5;
 int currentjointpos1 = 512;
 int currentjointpos2 = 512;
 int currentjointpos3 = 512;
@@ -119,18 +119,17 @@ void Project1(){
 
 
   //Assign x,y,z
-  x = 10;
-  y = 50;
-  z = 2;
+  x = 20;
+  y = -20;
+  z = 20;
   
-  const int S = z;
-  const int R = x;
+
   
-  const int A = 11;
-  const int B = 15;
-  const int C = 15.5;
-  const int D = 7;
-  const int E = 6;
+  const float A = 11;
+  const float B = 15;
+  const float C = 15.5;
+  const float D = 7;
+  const float E = 6;
 
 
   Serial.println("Moving to (X, Y, Z)");
@@ -143,13 +142,24 @@ void Project1(){
   delay (1000);
 
   //Given x, y, z find the angles for joint 1 - 5 (theta1 - theta5)
+  theta1 = atan2(y,x);
+  
+  const int S = y - sin(theta1) * (D + E);
+  const int R = x - (cos(theta1) * (D + E));
+  
+  float d = ((pow(R, 2) + pow(S, 2) + pow((z - A), 2) - pow(B, 2) - pow(C, 2)) / (2 * B * C));
+  Serial.println(sq(d));
+
+
+  
   int e = sqrt((pow((R - C), 2) + pow(S, 2)));
-  int D = ((pow(x, 2) + pow(y, 2) + pow((z - A), 2) - pow(B, 2) - pow(C, 2)) / (2 * B * C));
-  theta1 = atan2(y/x);
-  theta2 = (atan2((z - A), sqrt(pow(x, 2) + pow(y, 2))));
-  theta3 = (atan2(-sqrt(1 - pow(D, 2)), D));
-  theta4 = (theta2 * -1 - theta3);
+  
+  theta3 = (atan2(-sqrt(1 - pow(d, 2)), d));
+  theta2 = (atan2((z - A), sqrt(pow(R, 2) + pow(S, 2))) - atan2(C * sin(theta3), (B + C * cos(theta3))));
+  theta4 = (-theta2 - theta3);
   theta5 = 0;
+  
+
 
   theta1 = theta1 * 180 / PI;
   theta2 = theta2 * 180 / PI;
@@ -165,11 +175,23 @@ void Project1(){
 
 
   //Convert theta1-theta5 to jointpos1-jointpos5
-  jointpos1 = theta1 / 60 * 1024;
-  jointpos2 = theta2 / 60 * 1024;
-  jointpos3 = theta3 / 60 * 1024;
-  jointpos4 = theta4 / 60 * 1024;
-  jointpos5 = theta5 / 60 * 1024;
+//  jointpos1 = theta1 / 60 * 1024;
+//  jointpos2 = theta2 / 60 * 1024;
+//  jointpos3 = theta3 / 60 * 1024;
+//  jointpos4 = theta4 / 60 * 1024;
+//  jointpos5 = theta5 / 60 * 1024;
+  float cfactor = 512 / 180;
+  jointpos1 = 512 + theta1 * (512/180);
+  jointpos2 = 512 - (theta2 - 90) * (512/180);
+  jointpos3 = 512 + (theta3 + 90) * 2.884;
+  jointpos4 = 512 + theta4 * (512/180);
+  jointpos5 = 767;
+  
+  Serial.println(jointpos1);
+  Serial.println(jointpos2);
+  Serial.println(jointpos3);
+  Serial.println(jointpos4);
+  Serial.println(jointpos5);
 
   //move Servo 1 - Servo 7  
   //jointpos1 -> Servo ID: 1
@@ -177,144 +199,154 @@ void Project1(){
   //jointpos3 -> Servo ID: 4 & 5  IMP You need to move both servos 4 & 5 simultaneously and in opposite directions!!!
   //jointpos4 -> Servo ID: 6
   //jointpos5 -> Servo ID: 7
-
-  // Moving joint5, that is Servo 7
-  currentjointpos5 =  ax12GetRegister(servo7, 36, 2);
-  Serial.println("Current Joint5 Position:");
-  Serial.println(currentjointpos5);
-  Serial.println("End Joint5 Position:");
-  Serial.println(jointpos5);
-  delay(1000);
-  if (currentjointpos5 > jointpos5)
-  {
-    while(currentjointpos5 >= jointpos5) 
-    {
-      SetPosition(servo7, currentjointpos5);
-      currentjointpos5 = currentjointpos5--;
-      delay(20);
-    }
-  }
-  else
-  {
-    while(currentjointpos5 <= jointpos5) 
-    {
-      SetPosition(servo7, currentjointpos5);
-      currentjointpos5 = currentjointpos5++;
-      delay(20);
-    }
-  }
-
-  // Moving joint4, that is Servo 6
-  currentjointpos4 =  ax12GetRegister(servo6, 36, 2);
-  Serial.println("Current Joint4 Position:");
-  Serial.println(currentjointpos4);
-  Serial.println("End Joint4 Position:");
-  Serial.println(jointpos4);
-  delay(1000);
-  if (currentjointpos4 > jointpos4)
-  {
-    while(currentjointpos4 >= jointpos4) 
-    {
-      SetPosition(servo6, currentjointpos4);
-      currentjointpos4 = currentjointpos4--;
-      delay(20);
-    }
-  }
-  else
-  {
-    while(currentjointpos4 <= jointpos4) 
-    {
-      SetPosition(servo6, currentjointpos4);
-      currentjointpos4 = currentjointpos4++;
-      delay(20);
-    }
-  }
-
-  // Moving joint3, that is Servos 4 & 5 (simultaneiously, in the oppossite directions)   
-  currentjointpos4 =  ax12GetRegister(servo4, 36, 2);
-  currentjointpos5 =  ax12GetRegister(servo5, 36, 2);
-  Serial.println("Current Joint3 Position:");
-  Serial.println(currentjointpos4);
-  Serial.println("End Joint3 Position:");
-  Serial.println(jointpos3);
-  delay(1000);
-  if (currentjointpos4 > jointpos3)
-  {
-    while(currentjointpos4 >= jointpos3) 
-    {
-      SetPosition(servo4, currentjointpos4); 
-      SetPosition(servo5, currentjointpos5);
-      currentjointpos4 = currentjointpos4--;
-      currentjointpos5 = currentjointpos5++;
-      delay(20);
-    }
-  }
-  else
-  {
-    while(currentjointpos4 <= jointpos3) 
-    {
-      SetPosition(servo4, currentjointpos4); 
-      SetPosition(servo5, currentjointpos5);
-      currentjointpos4 = currentjointpos4++;
-      currentjointpos5 = currentjointpos5--;
-      delay(20);
-    }
-  }
-
-  // Moving joint2, that is Servos 2 & 2 (simultaneiously, in the oppossite directions)   
-  currentjointpos2 =  ax12GetRegister(servo2, 36, 2);
-  currentjointpos3 =  ax12GetRegister(servo3, 36, 2);
-  Serial.println("Current Joint2 Position:");
-  Serial.println(currentjointpos2);
-  Serial.println("End Joint3 Position:");
-  Serial.println(jointpos2);
-  delay(1000);
-  if (currentjointpos2 > jointpos2)
-  {
-    while(currentjointpos2 >= jointpos2) 
-    {
-      SetPosition(servo2, currentjointpos2); 
-      SetPosition(servo3, currentjointpos3);
-      currentjointpos2 = currentjointpos2--;
-      currentjointpos3 = currentjointpos3++;
-      delay(20);
-    }
-  }
-  else
-  {
-    while(currentjointpos2 <= jointpos2) 
-    {
-      SetPosition(servo2, currentjointpos2); 
-      SetPosition(servo3, currentjointpos3);
-      currentjointpos2 = currentjointpos2++;
-      currentjointpos3 = currentjointpos3--;
-      delay(20);
-    }
-  }
-  
-    // Moving joint1, that is Servo 1
-    currentjointpos1 =  ax12GetRegister(servo1, 36, 2);
-    Serial.println("Current Joint1 Position:");
-    Serial.println(currentjointpos1);
-    Serial.println("End Joint1 Position:");
-    Serial.println(jointpos1);
+//
+  if (768 > jointpos5 && jointpos5 > 256) {
+    // Moving joint5, that is Servo 7
+    currentjointpos5 =  ax12GetRegister(servo7, 36, 2);
+    Serial.println("Current Joint5 Position:");
+    Serial.println(currentjointpos5);
+    Serial.println("End Joint5 Position:");
+    Serial.println(jointpos5);
     delay(1000);
-    if (currentjointpos1 > jointpos1)
+    if (currentjointpos5 > jointpos5)
     {
-      while(currentjointpos1 >= jointpos1) 
+      while(currentjointpos5 >= jointpos5) 
       {
-        SetPosition(servo1, currentjointpos1);
-        currentjointpos1 = currentjointpos1--;
+        SetPosition(servo7, currentjointpos5);
+        currentjointpos5 = currentjointpos5--;
         delay(20);
       }
     }
     else
     {
-      while(currentjointpos1 <= jointpos1) 
+      while(currentjointpos5 <= jointpos5) 
       {
-        SetPosition(servo1, currentjointpos1);
-        currentjointpos1 = currentjointpos1++;
+        SetPosition(servo7, currentjointpos5);
+        currentjointpos5 = currentjointpos5++;
         delay(20);
+      }
+    }
+  }
+
+  if (768 > jointpos4 && jointpos4 > 256) {
+    // Moving joint4, that is Servo 6
+    currentjointpos4 =  ax12GetRegister(servo6, 36, 2);
+    Serial.println("Current Joint4 Position:");
+    Serial.println(currentjointpos4);
+    Serial.println("End Joint4 Position:");
+    Serial.println(jointpos4);
+    delay(1000);
+    if (currentjointpos4 > jointpos4)
+    {
+      while(currentjointpos4 >= jointpos4) 
+      {
+        SetPosition(servo6, currentjointpos4);
+        currentjointpos4 = currentjointpos4--;
+        delay(20);
+      }
+    }
+    else
+    {
+      while(currentjointpos4 <= jointpos4) 
+      {
+        SetPosition(servo6, currentjointpos4);
+        currentjointpos4 = currentjointpos4++;
+        delay(20);
+      }
+    }
+  }
+
+  if (512 > jointpos3 && jointpos3 > 128) {
+    // Moving joint3, that is Servos 4 & 5 (simultaneiously, in the oppossite directions)   
+    currentjointpos4 =  ax12GetRegister(servo4, 36, 2);
+    currentjointpos5 =  ax12GetRegister(servo5, 36, 2);
+    Serial.println("Current Joint3 Position:");
+    Serial.println(currentjointpos4);
+    Serial.println("End Joint3 Position:");
+    Serial.println(jointpos3);
+    delay(1000);
+    if (currentjointpos4 > jointpos3)
+    {
+      while(currentjointpos4 >= jointpos3) 
+      {
+        SetPosition(servo4, currentjointpos4); 
+        SetPosition(servo5, currentjointpos5);
+        currentjointpos4 = currentjointpos4--;
+        currentjointpos5 = currentjointpos5++;
+        delay(20);
+      }
+    }
+    else
+    {
+      while(currentjointpos4 <= jointpos3) 
+      {
+        SetPosition(servo4, currentjointpos4); 
+        SetPosition(servo5, currentjointpos5);
+        currentjointpos4 = currentjointpos4++;
+        currentjointpos5 = currentjointpos5--;
+        delay(20);
+      }
+    }
+  }
+
+  if (768 > jointpos2 && jointpos2 > 256) {
+    // Moving joint2, that is Servos 2 & 3 (simultaneiously, in the oppossite directions)   
+    currentjointpos2 =  ax12GetRegister(servo2, 36, 2);
+    currentjointpos3 =  ax12GetRegister(servo3, 36, 2);
+    Serial.println("Current Joint2 Position:");
+    Serial.println(currentjointpos2);
+    Serial.println("End Joint3 Position:");
+    Serial.println(jointpos2);
+    delay(1000);
+    if (currentjointpos2 > jointpos3)
+    {
+      while(currentjointpos2 >= jointpos3) 
+      {
+        SetPosition(servo2, currentjointpos2); 
+        SetPosition(servo3, currentjointpos3);
+        currentjointpos2 = currentjointpos2--;
+        currentjointpos3 = currentjointpos3++;
+        delay(20);
+      }
+    }
+    else
+    {
+      while(currentjointpos2 <= jointpos2) 
+      {
+        SetPosition(servo2, currentjointpos2); 
+        SetPosition(servo3, currentjointpos3);
+        currentjointpos2 = currentjointpos2++;
+        currentjointpos3 = currentjointpos3--;
+        delay(20);
+      }
+    }
+  }
+  
+    if (896 > jointpos1 && jointpos1 > 128) {
+      // Moving joint1, that is Servo 1
+      currentjointpos1 =  ax12GetRegister(servo1, 36, 2);
+      Serial.println("Current Joint1 Position:");
+      Serial.println(currentjointpos1);
+      Serial.println("End Joint1 Position:");
+      Serial.println(jointpos1);
+      delay(1000);
+      if (currentjointpos1 > jointpos1)
+      {
+        while(currentjointpos1 >= jointpos1) 
+        {
+          SetPosition(servo1, currentjointpos1);
+          currentjointpos1 = currentjointpos1--;
+          delay(20);
+        }
+      }
+      else
+      {
+        while(currentjointpos1 <= jointpos1) 
+        {
+          SetPosition(servo1, currentjointpos1);
+          currentjointpos1 = currentjointpos1++;
+          delay(20);
+        }
       }
     }
 
